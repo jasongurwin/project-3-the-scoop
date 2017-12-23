@@ -312,26 +312,18 @@ function updateComment(url,request){
 
 function deleteComment(url,request){
 
-  // const id = Number(url.split('/').filter(segment => segment)[1]);
-  // const savedComment = database.comments[id];
-  // const response = {};
-  //
-  // if (savedArticle) {
-  //   database.comments[id] = null;
-  //   savedArticle.commentIds.forEach(commentId => {
-  //     const comment = database.comments[commentId];
-  //     database.comments[commentId] = null;
-  //     const userCommentIds = database.users[comment.username].commentIds;
-  //     userCommentIds.splice(userCommentIds.indexOf(id), 1);
-  //   });
-  //   const userArticleIds = database.users[savedArticle.username].articleIds;
-  //   userArticleIds.splice(userArticleIds.indexOf(id), 1);
-  //   response.status = 204;
-  // } else {
-  //   response.status = 400;
-  // }
-  //
-  // return response;
+  const id = Number(url.split('/').filter(segment => segment)[1]);
+  const savedComment = database.comments[id];
+  const response = {};
+
+  if (savedComment) {
+    database.comments[id] = null;
+    response.status = 204;
+  } else {
+    response.status = 400;
+  }
+
+  return response;
 
 }
 
