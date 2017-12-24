@@ -39,11 +39,11 @@ const routes = {
     'DELETE': deleteComment
 
   },
-  'comments/:id/upvote':{
-    'PUT': updateComment
+  '/comments/:id/upvote':{
+    'PUT': upvoteComment
 
   },
-  'comments/:id/downvote':{
+  '/comments/:id/downvote':{
   'PUT': downvoteComment
 }
 };
@@ -265,7 +265,7 @@ function createComment(url,request){
   const response = {};
 
   if (requestComment && requestComment.body &&
-      requestComment.username && database.users[requestComment.username]) {
+      requestComment.username && requestComment.articleId && database.articles[requestComment.articleId] && database.users[requestComment.username]) {
     const comment = {
       id: database.nextCommentId++,
       body: requestComment.body,
@@ -276,7 +276,8 @@ function createComment(url,request){
     };
 
     database.comments[comment.id] = comment;
-    database.users[comment.username].commentIds.push(comment.id);
+    database.users[requestComment.username].commentIds.push(comment.id);
+    database.articles[comment.articleId].commentIds.push(comment.id);
 
     response.body = {comment: comment};
     response.status = 201;
@@ -318,9 +319,16 @@ function deleteComment(url,request){
 
   if (savedComment) {
     database.comments[id] = null;
+
+    const userCommentIds = database.users[savedComment.username].commentIds;
+    userCommentIds.splice(userCommentIds.indexOf(id), 1);
+
+    const articleCommentIds = database.articles[savedComment.articleId].commentIds;
+    articleCommentIds.splice(articleCommentIds.indexOf(id), 1);
+
     response.status = 204;
   } else {
-    response.status = 400;
+    response.status = 404;
   }
 
   return response;
